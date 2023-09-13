@@ -4,18 +4,16 @@ Content-Type: application/json
 
 {
     "name": "John Doe"
-}
-
-### Retrieving a person by ID (GET request)
-GET http://127.0.0.1:5003/api/John%20Doe
-
-### Updating a person by ID (PUT request)
-PUT http://127.0.0.1:5003/api/2
+}                                                    
+### Retrieving a person by Slack Name (GET request)
+GET http://127.0.0.1:5003/api?slack_name=backendbro             
+### Updating a person by Slack Name (PUT request)
+PUT http://127.0.0.1:5003/api?slack_name=backendbro
 Content-Type: application/json
 
 {
-"name": "New Name for John Doe"
+    "name": "New Name for John Doe"
 }
 
-### Deleting a person by ID (DELETE request)
-DELETE http://127.0.0.1:5003/api/2
+### Deleting a person by Slack Name (DELETE request)
+DELETE http://127.0.0.1:5003/api?slack_name=backendbro
