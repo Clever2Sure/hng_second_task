@@ -1,0 +1,21 @@
+### Creating a new person (POST request)
+POST http://127.0.0.1:5003/api
+Content-Type: application/json
+
+{
+    "name": "John Doe"
+}
+
+### Retrieving a person by ID (GET request)
+GET http://127.0.0.1:5003/api/John%20Doe
+
+### Updating a person by ID (PUT request)
+PUT http://127.0.0.1:5003/api/2
+Content-Type: application/json
+
+{
+"name": "New Name for John Doe"
+}
+
+### Deleting a person by ID (DELETE request)
+DELETE http://127.0.0.1:5003/api/2
