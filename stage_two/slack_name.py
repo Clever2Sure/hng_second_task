@@ -2,9 +2,9 @@ from app import app, db, Person  # Import necessary modules and classes from you
 
 # Create an application context to interact with your database
 with app.app_context():
-    slack_name = 'backendbro'
+    slack_name = 'Paul_Clever'  # Updated name to "Paul_Clever" (case-sensitive)
 
-    # Check if a person record with the Slack name 'backendbro' exists
+    # Check if a person record with the Slack name 'Paul_Clever' exists
     existing_person = Person.query.filter_by(name=slack_name).first()
 
     # Insert a new record if it doesn't exist
@@ -15,7 +15,7 @@ with app.app_context():
 
     # Print messages to indicate the results
     if existing_person:
-        print("Person with Slack name 'backendbro' already exists.")
+        print("Person with Slack name 'Paul_Clever' already exists.")
     else:
-        print("New person record with Slack name 'backendbro' inserted successfully.")
+        print("New person record with Slack name 'Paul_Clever' inserted successfully.")
 
