@@ -1,19 +1,30 @@
-### Creating a new person (POST request)
-POST http://127.0.0.1:5003/api
-Content-Type: application/json
+def handle_person_request(slack_name, data=None):
+    with app.app_context():
+        # Check if a person record with the given Slack name exists
+        existing_person = Person.query.filter_by(name=slack_name).first()
 
-{
-    "name": "John Doe"
-}                                                    
-### Retrieving a person by Slack Name (GET request)
-GET http://127.0.0.1:5003/api?slack_name=backendbro             
-### Updating a person by Slack Name (PUT request)
-PUT http://127.0.0.1:5003/api?slack_name=backendbro
-Content-Type: application/json
+        if data is None:
+            # GET request (retrieve a person by Slack Name)
+            if existing_person:
+                return {"id": existing_person.id, "name": existing_person.name}
+            else:
+                return {"error": "Person not found"}, 404
+        elif not existing_person:
+            # POST request (create a new person)
+            if slack_name == "Paul Clever":
+                new_person = Person(name=slack_name)
+                db.session.add(new_person)
+                db.session.commit()
+                return {"message": f"Person with Slack name '{slack_name}' created successfully"}, 201
+            else:
+                return {"error": "You can only create a person with Slack name 'Paul Clever'"}, 400
+        else:
+            # PUT request (update a person's name)
+            new_name = data.get("name")
+            if new_name:
+                existing_person.name = new_name
+                db.session.commit()
+                return {"message": f"Person's name updated successfully to '{new_name}'"}, 200
+            else:
+                return {"error": "Name is required for updating"}, 400
 
-{
-    "name": "New Name for John Doe"
-}
-
-### Deleting a person by Slack Name (DELETE request)
-DELETE http://127.0.0.1:5003/api?slack_name=backendbro
