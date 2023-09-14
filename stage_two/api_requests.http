@@ -1,30 +1,47 @@
-def handle_person_request(slack_name, data=None):
-    with app.app_context():
-        # Check if a person record with the given Slack name exists
-        existing_person = Person.query.filter_by(name=slack_name).first()
+import requests
 
-        if data is None:
-            # GET request (retrieve a person by Slack Name)
-            if existing_person:
-                return {"id": existing_person.id, "name": existing_person.name}
-            else:
-                return {"error": "Person not found"}, 404
-        elif not existing_person:
-            # POST request (create a new person)
-            if slack_name == "Paul Clever":
-                new_person = Person(name=slack_name)
-                db.session.add(new_person)
-                db.session.commit()
-                return {"message": f"Person with Slack name '{slack_name}' created successfully"}, 201
-            else:
-                return {"error": "You can only create a person with Slack name 'Paul Clever'"}, 400
+def handle_person_request(slack_name, data=None):
+    base_url = "https://crud-api-0yn8.onrender.com/api"  # Updated API URL
+
+    if data is None:
+        # GET request to retrieve a person by Slack Name
+        response = requests.get(f"{base_url}?slack_name={slack_name}")
+        return response.json()
+    elif not existing_person:
+        # POST request to create a new person
+        if slack_name == "Paul Clever":
+            response = requests.post(base_url, json={"name": slack_name})
+            return response.json()
         else:
-            # PUT request (update a person's name)
-            new_name = data.get("name")
-            if new_name:
-                existing_person.name = new_name
-                db.session.commit()
-                return {"message": f"Person's name updated successfully to '{new_name}'"}, 200
-            else:
-                return {"error": "Name is required for updating"}, 400
+            return {"error": "You can only create a person with Slack name 'Paul Clever'"}, 400
+    else:
+        # PUT request to update a person's name
+        new_name = data.get("name")
+        if new_name:
+            response = requests.put(f"{base_url}?slack_name={slack_name}", json={"name": new_name})
+            return response.json()
+        else:
+            return {"error": "Name is required for updating"}, 400
+
+# DELETE request to delete a person by Slack Name
+def delete_person(slack_name):
+    base_url = "https://crud-api-0yn8.onrender.com/api"  # Updated API URL
+    response = requests.delete(f"{base_url}?slack_name={slack_name}")
+    return response.json()
+
+if __name__ == "__main__":
+    # Example usage of handle_person_request for different HTTP requests
+
+    # GET request to retrieve a person by Slack Name
+    slack_name = "Paul_Clever"  # Replace with the desired Slack Name
+    print(handle_person_request(slack_name))
+
+    # PUT request to update a person's name
+    slack_name = "Paul_Clever"  # Replace with the desired Slack Name
+    new_name = "New Name for Paul Clever"  # Replace with the desired new name
+    print(handle_person_request(slack_name, {"name": new_name}))
+
+    # DELETE request to delete a person by Slack Name
+    slack_name = "Paul_Clever"  # Replace with the desired Slack Name
+    print(delete_person(slack_name))
 
