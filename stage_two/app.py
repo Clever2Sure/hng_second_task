@@ -17,9 +17,9 @@ class Person(db.Model):
 def is_valid_name(name):
     return isinstance(name, str) and len(name.strip()) > 0
 
-# Create a route that listens to /api
-@app.route('/api', methods=['GET', 'POST'])
-def crud_operations():
+# Create a person record
+@app.route('/api', methods=['POST'])
+def create_person():
     if request.method == 'POST':
         data = request.get_json()
 
@@ -27,66 +27,57 @@ def crud_operations():
             new_person = Person(name=data['name'])
             db.session.add(new_person)
             db.session.commit()
-            return jsonify({"message": "Person created successfully"}), 201
+            return jsonify({"name": data['name']}), 201
         else:
             return jsonify({"error": "Invalid or missing name"}), 400
 
-    elif request.method == 'GET':
-        slack_name = request.args.get('slack_name')
-
-        if slack_name:
-            person = Person.query.filter_by(name=slack_name).first()
-            if person:
-                # Modify the response to set the name as "Paul Clever"
-                return jsonify({"id": person.id, "name": "Paul Clever"})
-            else:
-                return jsonify({"error": "Person not found"}), 404
-        else:
-            return jsonify({"error": "Missing slack_name query parameter"}), 400
-
-# Updating a person by Slack Name (PUT request)
-@app.route('/api', methods=['PUT'])
-def update_person():
-    data = request.get_json()
-    slack_name = request.args.get('slack_name')
-
-    if slack_name:
-        person = Person.query.filter_by(name=slack_name).first()
+# Read details about a person
+@app.route('/api/<int:person_id>', methods=['GET'])
+def read_person(person_id):
+    if request.method == 'GET':
+        person = Person.query.get(person_id)
         if person:
-            if 'name' in data:
-                person.name = data['name']
-                db.session.commit()
-                return jsonify({"message": "Person updated successfully"}), 200
-            else:
-                return jsonify({"error": "Name is required"}), 400
+            return jsonify({"id": person.id, "name": person.name}), 200
         else:
             return jsonify({"error": "Person not found"}), 404
-    else:
-        return jsonify({"error": "Missing slack_name query parameter"}), 400
 
-# Deleting a person by Slack Name (DELETE request)
-@app.route('/api', methods=['DELETE'])
-def delete_person():
-    slack_name = request.args.get('slack_name')
+# Update a person's information
+@app.route('/api/<int:person_id>', methods=['PUT'])
+def update_person(person_id):
+    if request.method == 'PUT':
+        data = request.get_json()
+        person = Person.query.get(person_id)
 
-    if slack_name:
-        person = Person.query.filter_by(name=slack_name).first()
+        if person:
+            if 'name' in data and is_valid_name(data['name']):
+                person.name = data['name']
+                db.session.commit()
+                return jsonify({"name": data['name']}), 200
+            else:
+                return jsonify({"error": "Invalid or missing name"}), 400
+        else:
+            return jsonify({"error": "Person not found"}), 404
+
+# Delete a person from the database
+@app.route('/api/<int:person_id>', methods=['DELETE'])
+def delete_person(person_id):
+    if request.method == 'DELETE':
+        person = Person.query.get(person_id)
+
         if person:
             db.session.delete(person)
             db.session.commit()
             return jsonify({"message": "Person deleted successfully"}), 200
         else:
             return jsonify({"error": "Person not found"}), 404
-    else:
-        return jsonify({"error": "Missing slack_name query parameter"}), 400
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        
+
         # Initialize the database with your name
-        paul_clever = Person(name="Paul_Clever")
+        paul_clever = Person(name="Paul Clever")
         db.session.add(paul_clever)
         db.session.commit()
-        
+
     app.run(host='0.0.0.0', port=5004)

@@ -1,7 +1,7 @@
 import requests
 
 # Define the base URL for your API
-base_url = 'http://172.31.35.94:5004/api'
+base_url = 'http://crud-api-0yn8.onrender.com/api'  # Update this with your actual API URL
 
 # Define the Slack name you want to work with
 slack_name = 'Paul Clever'
