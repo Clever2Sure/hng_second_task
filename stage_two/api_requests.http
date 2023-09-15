@@ -1,14 +1,14 @@
 import requests
 
 # Define the base URL for your API
-base_url = 'http://172.31.35.94:5004/api'  # Update this with your actual API URL if needed
+base_url = 'http://crud-api-0yn8.onrender.com/api'  # Update this with your actual API URL if needed
 
 # Define the Slack name you want to work with
 slack_name = 'Paul Clever'
 
 # Function to handle CRUD operations on a person
 def handle_person(slack_name, data=None, method='GET'):
-    url = f'{base_url}/{slack_name}'
+    url = f'{base_url}?slack_name={slack_name}'
     
     if method == 'GET':
         response = requests.get(url)
