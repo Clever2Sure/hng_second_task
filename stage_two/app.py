@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file into os.environ
 load_dotenv()
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # Replace with your database URL
 db = SQLAlchemy(app)
@@ -21,13 +20,15 @@ def is_valid_name(name):
 @app.route('/api', methods=['GET'])
 def read_person_by_slack_name():
     slack_name = request.args.get('slack_name')
-    
+
     if slack_name:
         person = Person.query.filter_by(name=slack_name).first()
         if person:
+            # Format the name as "Paul Clever"
+            formatted_name = ' '.join(map(lambda x: x.capitalize(), person.name.split('_')))
             response_data = {
                 "id": person.id,
-                "name": person.name
+                "name": formatted_name
             }
             return jsonify(response_data), 200
         else:
@@ -45,9 +46,9 @@ def create_person():
             new_person = Person(name=data['name'])
             db.session.add(new_person)
             db.session.commit()
-            
+
             response_data = {"name": data['name']}
-            
+
             return jsonify(response_data), 201
         else:
             return jsonify({"error": "Invalid or missing name"}), 400
@@ -63,9 +64,9 @@ def update_person():
         if 'name' in data and is_valid_name(data['name']):
             person.name = data['name']
             db.session.commit()
-            
+
             response_data = {"name": data['name']}
-            
+
             return jsonify(response_data), 200
         else:
             return jsonify({"error": "Invalid or missing name"}), 400
@@ -81,9 +82,9 @@ def delete_person():
     if person:
         db.session.delete(person)
         db.session.commit()
-        
+
         response_data = {"message": "Person deleted successfully"}
-        
+
         return jsonify(response_data), 200
     else:
         return jsonify({"error": "Person not found"}), 404
@@ -98,3 +99,4 @@ if __name__ == '__main__':
         db.session.commit()
 
     app.run(host='0.0.0.0', port=5004)
+
