@@ -29,14 +29,19 @@ def handle_person(slack_name, data=None, method='GET'):
 # Function to format API responses
 def format_response(response):
     if 'id' in response and 'name' in response:
-        return {
+        formatted_response = {
             'id': response['id'],
             'name': response['name']
         }
+        response_str = '{\n'
+        for key, value in formatted_response.items():
+            response_str += f'   "{key}": {json.dumps(value)},\n'
+        response_str = response_str.rstrip(',\n')  # Remove the trailing comma and newline
+        response_str += '\n}'
+        return response_str
     elif 'message' in response:
-        return {
-            'message': response['message']
-        }
+        message = response['message']
+        return f'{{\n   "message": "{message}"\n}}'
     else:
         return response
 
