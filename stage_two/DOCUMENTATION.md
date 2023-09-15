@@ -5,38 +5,60 @@
 This Flask API project simplifies managing person data with CRUD operations (Create, Read, Update, Delete). It offers the following features:
 
 - Create a person record.
-- Read details about a person.
-- Update a person's information.
-- Delete a person from the database.
+- Read details about a person by Slack name.
+- Update a person's information by Slack name.
+- Delete a person from the database by Slack name.
 
 ## Endpoints
 
-### Create a Person
+### Read a Person by Slack Name
 
-**HTTP Method:** POST
+**HTTP Method:** GET
 
 **Endpoint:** `/api`
 
-**Request Format:** JSON
+**Query Parameter:** `slack_name` (e.g., `/api?slack_name=Paul_Clever`)
 
-**Request Body Example:**
+**Response Format:** JSON
+
+**Response Example:**
 
 ```json
+{
+  "id": 1,
+  "name": "Paul Clever"
+}
+
+
+Create a Person
+HTTP Method: POST
+
+Endpoint: /api
+
+Request Format: JSON
+
+Request Body Example:
+
 {
   "name": "Paul Clever"
 }
 
 
+Response Format: JSON
 
-Read a Person
-HTTP Method: GET
+Response Example:
 
-Endpoint: /api/{person_id}
+{
+  "name": "Paul Clever"
+}
 
-Update a Person
+
+Update a Person by Slack Name
 HTTP Method: PUT
 
-Endpoint: /api/{person_id}
+Endpoint: /api
+
+Query Parameter: slack_name (e.g., /api?slack_name=Paul_Clever)
 
 Request Format: JSON
 
@@ -47,17 +69,37 @@ Request Body Example:
 }
 
 
+Response Format: JSON
 
-Delete a Person
+Response Example:
+
+{
+  "name": "Updated Name"
+}
+
+
+
+Delete a Person by Slack Name
 HTTP Method: DELETE
 
-Endpoint: /api/{person_id}
+Endpoint: /api
+
+Query Parameter: slack_name (e.g., /api?slack_name=Paul_Clever)
+
+Response Format: JSON
+
+Response Example:
+
+{
+  "message": "Person deleted successfully"
+}
 
 
 Testing
 To ensure the API's functionality, run the following command:
 
 python -m unittest tests/test_app.py
+
 
 
 Deployment
