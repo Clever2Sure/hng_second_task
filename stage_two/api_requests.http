@@ -10,37 +10,50 @@ slack_name = 'Paul Clever'
 def handle_person(slack_name, data=None, method='GET'):
     url = f'{base_url}?slack_name={slack_name}'
     
-    if method == 'GET':
-        response = requests.get(url)
-    elif method == 'POST':
-        response = requests.post(url, json=data)
-    elif method == 'PUT':
-        response = requests.put(url, json=data)
-    elif method == 'DELETE':
-        response = requests.delete(url)
+    try:
+        if method == 'GET':
+            response = requests.get(url)
+        elif method == 'POST':
+            response = requests.post(url, json=data)
+        elif method == 'PUT':
+            response = requests.put(url, json=data)
+        elif method == 'DELETE':
+            response = requests.delete(url)
+        
+        response.raise_for_status()  # Raise an exception for non-2xx status codes
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
 
-    return response.json()
+# Function to format API responses
+def format_response(response):
+    if 'id' in response and 'name' in response:
+        return {
+            'id': response['id'],
+            'name': response['name']
+        }
+    elif 'message' in response:
+        return {
+            'message': response['message']
+        }
+    else:
+        return response
 
 if __name__ == '__main__':
     # Create a new person with Slack name 'Paul Clever'
     create_response = handle_person(slack_name, method='POST')
-    print('Create Person Response:', create_response)
+    print('Create Person Response:', format_response(create_response))
 
     # Retrieve a person by Slack name
     get_response = handle_person(slack_name, method='GET')
-    if 'id' in get_response and 'name' in get_response:
-        print('Get Person Response:')
-        print(f"{{\n   'id': {get_response['id']},\n   'name': '{get_response['name']}'\n}}")
+    print('Get Person Response:', format_response(get_response))
 
     # Update the person's name to 'New Name for Paul Clever'
     new_name = 'New Name for Paul Clever'
     update_response = handle_person(slack_name, data={"name": new_name}, method='PUT')
-    if 'id' in update_response and 'name' in update_response:
-        print('Update Person Response:')
-        print(f"{{\n   'id': {update_response['id']},\n   'name': '{update_response['name']}'\n}}")
+    print('Update Person Response:', format_response(update_response))
 
     # Delete the person by Slack name
     delete_response = handle_person(slack_name, method='DELETE')
-    if 'message' in delete_response:
-        print('Delete Person Response:')
-        print(f"{{\n   'message': '{delete_response['message']}'\n}}")
+    print('Delete Person Response:', format_response(delete_response))
