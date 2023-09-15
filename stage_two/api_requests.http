@@ -27,14 +27,20 @@ if __name__ == '__main__':
     print('Create Person Response:', create_response)
 
     # Retrieve a person by Slack name
-    get_response = handle_person(slack_name)
-    print('Get Person Response:', get_response)
+    get_response = handle_person(slack_name, method='GET')
+    if 'id' in get_response and 'name' in get_response:
+        print('Get Person Response:')
+        print(f"{{\n   'id': {get_response['id']},\n   'name': '{get_response['name']}'\n}}")
 
     # Update the person's name to 'New Name for Paul Clever'
     new_name = 'New Name for Paul Clever'
     update_response = handle_person(slack_name, data={"name": new_name}, method='PUT')
-    print('Update Person Response:', update_response)
+    if 'id' in update_response and 'name' in update_response:
+        print('Update Person Response:')
+        print(f"{{\n   'id': {update_response['id']},\n   'name': '{update_response['name']}'\n}}")
 
     # Delete the person by Slack name
     delete_response = handle_person(slack_name, method='DELETE')
-    print('Delete Person Response:', delete_response)
+    if 'message' in delete_response:
+        print('Delete Person Response:')
+        print(f"{{\n   'message': '{delete_response['message']}'\n}}")
