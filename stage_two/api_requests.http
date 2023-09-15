@@ -1,47 +1,40 @@
 import requests
 
-def handle_person_request(slack_name, data=None):
-    base_url = "https://crud-api-0yn8.onrender.com/api"  # Updated API URL
+# Define the base URL for your API
+base_url = 'http://172.31.35.94:5004/api'
 
-    if data is None:
-        # GET request to retrieve a person by Slack Name
-        response = requests.get(f"{base_url}?slack_name={slack_name}")
-        return response.json()
-    elif not existing_person:
-        # POST request to create a new person
-        if slack_name == "Paul Clever":
-            response = requests.post(base_url, json={"name": slack_name})
-            return response.json()
-        else:
-            return {"error": "You can only create a person with Slack name 'Paul Clever'"}, 400
-    else:
-        # PUT request to update a person's name
-        new_name = data.get("name")
-        if new_name:
-            response = requests.put(f"{base_url}?slack_name={slack_name}", json={"name": new_name})
-            return response.json()
-        else:
-            return {"error": "Name is required for updating"}, 400
+# Define the Slack name you want to work with
+slack_name = 'Paul Clever'
 
-# DELETE request to delete a person by Slack Name
-def delete_person(slack_name):
-    base_url = "https://crud-api-0yn8.onrender.com/api"  # Updated API URL
-    response = requests.delete(f"{base_url}?slack_name={slack_name}")
+# Function to handle CRUD operations on a person
+def handle_person(slack_name, data=None, method='GET'):
+    url = f'{base_url}/{slack_name}'
+    
+    if method == 'GET':
+        response = requests.get(url)
+    elif method == 'POST':
+        response = requests.post(url, json=data)
+    elif method == 'PUT':
+        response = requests.put(url, json=data)
+    elif method == 'DELETE':
+        response = requests.delete(url)
+
     return response.json()
 
-if __name__ == "__main__":
-    # Example usage of handle_person_request for different HTTP requests
+if __name__ == '__main__':
+    # Create a new person with Slack name 'Paul Clever'
+    create_response = handle_person(slack_name, method='POST')
+    print('Create Person Response:', create_response)
 
-    # GET request to retrieve a person by Slack Name
-    slack_name = "Paul_Clever"  # Replace with the desired Slack Name
-    print(handle_person_request(slack_name))
+    # Retrieve a person by Slack name
+    get_response = handle_person(slack_name)
+    print('Get Person Response:', get_response)
 
-    # PUT request to update a person's name
-    slack_name = "Paul_Clever"  # Replace with the desired Slack Name
-    new_name = "New Name for Paul Clever"  # Replace with the desired new name
-    print(handle_person_request(slack_name, {"name": new_name}))
+    # Update the person's name to 'New Name for Paul Clever'
+    new_name = 'New Name for Paul Clever'
+    update_response = handle_person(slack_name, data={"name": new_name}, method='PUT')
+    print('Update Person Response:', update_response)
 
-    # DELETE request to delete a person by Slack Name
-    slack_name = "Paul_Clever"  # Replace with the desired Slack Name
-    print(delete_person(slack_name))
-
+    # Delete the person by Slack name
+    delete_response = handle_person(slack_name, method='DELETE')
+    print('Delete Person Response:', delete_response)

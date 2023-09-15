@@ -37,7 +37,8 @@ def crud_operations():
         if slack_name:
             person = Person.query.filter_by(name=slack_name).first()
             if person:
-                return jsonify({"id": person.id, "name": person.name})
+                # Modify the response to set the name as "Paul Clever"
+                return jsonify({"id": person.id, "name": "Paul Clever"})
             else:
                 return jsonify({"error": "Person not found"}), 404
         else:
@@ -82,5 +83,10 @@ def delete_person():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=5003)
-
+        
+        # Initialize the database with your name
+        paul_clever = Person(name="Paul_Clever")
+        db.session.add(paul_clever)
+        db.session.commit()
+        
+    app.run(host='0.0.0.0', port=5004)

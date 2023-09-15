@@ -5,21 +5,23 @@ from app.models import Person  # Import your Person model
 
 class TestCRUDOperations(unittest.TestCase):
     def setUp(self):
-        # Create a test client
-        self.app = self.app = app.test_client()
-
-        # Create tables in the test database
+        self.app = app.test_client()
         with app.app_context():
             db.create_all()
 
     def tearDown(self):
-        # Drop tables after each test
         with app.app_context():
             db.drop_all()
 
     def test_create_person(self):
-        response = self.app.post('/api', json={"name": "John Doe"})
+        # Create a person with the name "Paul Clever"
+        response = self.app.post('/api', json={"name": "Paul Clever"})
         self.assertEqual(response.status_code, 201)
+
+        # Check if "Paul Clever" exists in the database
+        with app.app_context():
+            paul_clever = Person.query.filter_by(name="Paul Clever").first()
+            self.assertIsNotNone(paul_clever)
 
     def test_read_person(self):
         # Create a test person in the database

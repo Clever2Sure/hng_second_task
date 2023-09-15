@@ -1,7 +1,7 @@
 from flask import Flask
 from .models import db
 from .views import api_bp
-from .models import Student
+from .models import Person
 
 
 def create_app():
